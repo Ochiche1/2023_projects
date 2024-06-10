@@ -1,0 +1,26 @@
+truncate table orbit_cliq_outward_trans
+go
+
+INSERT INTO orbit_cliq_outward_trans ( tran_id, history_ptid, accountnumber, isOcode, accountstatus, acctname, drcr, acctype, transactionreference, amount, dailylimit, currentbalance, trandate, narration, channelId, effective_dt, process_status, error_code, error_message ) 
+		 VALUES ( 4141295889, 4141202372, '0013500049', '4501', 'Active', 'Ajifolawe Bolarinwa Ayodele', 'cr', 'CA', '4141295889', 3500.000000, 0.000000, 0.000000, '03/06/2023 03:23:47.590 PM', '0011401009-cr-4501', 1, '06/03/2019 12:00:00.000 AM', 'Queued', NULL, NULL ) 
+go
+
+INSERT INTO orbit_cliq_outward_trans ( tran_id, history_ptid, accountnumber, isOcode, accountstatus, acctname, drcr, acctype, transactionreference, amount, dailylimit, currentbalance, trandate, narration, channelId, effective_dt, process_status, error_code, error_message ) 
+		 VALUES ( 4141295870, 4141202371, '0011401009', '4502', 'Active', 'Ajifolawe Bolarinwa Ayodele', 'dr', 'CA', '4141295870', 1200.000000, 0.000000, 0.000000, '03/06/2023 03:24:39.783 PM', '0011401009-dr-4502', 1, '06/03/2019 12:00:00.000 AM', 'Queued', NULL, NULL ) 
+go
+
+INSERT INTO orbit_cliq_outward_trans ( tran_id, history_ptid, accountnumber, isOcode, accountstatus, acctname, drcr, acctype, transactionreference, amount, dailylimit, currentbalance, trandate, narration, channelId, effective_dt, process_status, error_code, error_message ) 
+		 VALUES ( 4141295812, 4141202376, '0011100400', '4501', 'Active', 'OMOLOSHO OYEYEMI ADEDOKUN', 'cr', 'SA', '4141295812', 4000.000000, 0.000000, 0.000000, '03/06/2023 03:25:21.743 PM', '0013500049-cr-4501', 1, '06/03/2019 12:00:00.000 AM', 'Queued', NULL, NULL ) 
+go
+
+INSERT INTO orbit_cliq_outward_trans ( tran_id, history_ptid, accountnumber, isOcode, accountstatus, acctname, drcr, acctype, transactionreference, amount, dailylimit, currentbalance, trandate, narration, channelId, effective_dt, process_status, error_code, error_message ) 
+		 VALUES ( 4141295866, 4141202379, '0013500049', '4502', 'Active', 'Ajifolawe Bolarinwa Ayodele', 'dr', 'SA', '4141295866', 3000.000000, 0.000000, 0.000000, '03/06/2023 03:25:28.233 PM', '0013500049-dr-4502', 1, '06/03/2019 12:00:00.000 AM', 'Queued', NULL, NULL ) 
+go
+
+INSERT INTO orbit_cliq_outward_trans ( tran_id, history_ptid, accountnumber, isOcode, accountstatus, acctname, drcr, acctype, transactionreference, amount, dailylimit, currentbalance, trandate, narration, channelId, effective_dt, process_status, error_code, error_message ) 
+		 VALUES ( 4141295814, 4141202375, '0011401009', '4501', 'Active', 'Ajifolawe Bolarinwa Ayodele', 'cr', 'SA', '4141295814', 5000.000000, 0.000000, 0.000000, '03/06/2023 03:25:21.743 PM', '0011100400-cr-4501', 1, '06/03/2019 12:00:00.000 AM', 'Queued', NULL, NULL ) 
+go
+
+INSERT INTO orbit_cliq_outward_trans ( tran_id, history_ptid, accountnumber, isOcode, accountstatus, acctname, drcr, acctype, transactionreference, amount, dailylimit, currentbalance, trandate, narration, channelId, effective_dt, process_status, error_code, error_message ) 
+		 VALUES ( 4141295815, 4141202373, '0011100400', '4502', 'Active', 'OMOLOSHO OYEYEMI ADEDOKUN', 'dr', 'SA', '4141295815', 3300.000000, 0.000000, 0.000000, '03/06/2023 03:25:28.233 PM', '0011100400-dr-4502', 1, '06/03/2019 12:00:00.000 AM', 'Queued', NULL, NULL ) 
+go

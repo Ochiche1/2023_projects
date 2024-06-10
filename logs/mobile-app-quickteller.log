@@ -1,0 +1,43 @@
+2023-05-23 10:56:17 [background-preinit] INFO  : HV000001: Hibernate Validator 8.0.0.Final
+2023-05-23 10:56:17 [main] INFO  : Starting MobileAppIntegratorQuicktellerApplication v1.0.0 using Java 17.0.1 with PID 2412 (C:\Users\saliu\Documents\2023 work\MobileAppIntegratorQuickteller-1.0.0.jar started by SOFTWAREDEVELOPER1 in C:\Users\saliu\Documents\2023 work)
+2023-05-23 10:56:17 [main] INFO  : The following 1 profile is active: "dev"
+2023-05-23 10:56:20 [main] INFO  : Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-05-23 10:56:20 [main] WARN  : http://javax.xml.XMLConstants/property/accessExternalDTD property not supported by org.apache.xerces.jaxp.DocumentBuilderFactoryImpl
+2023-05-23 10:56:20 [main] WARN  : http://javax.xml.XMLConstants/property/accessExternalSchema property not supported by org.apache.xerces.jaxp.DocumentBuilderFactoryImpl
+2023-05-23 10:56:20 [main] INFO  : Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2023-05-23 10:56:21 [main] INFO  : Tomcat initialized with port(s): 8080 (http)
+2023-05-23 10:56:21 [main] INFO  : Initializing ProtocolHandler ["http-nio-8080"]
+2023-05-23 10:56:21 [main] INFO  : Starting service [Tomcat]
+2023-05-23 10:56:21 [main] INFO  : Starting Servlet engine: [Apache Tomcat/10.1.4]
+2023-05-23 10:56:21 [main] INFO  : Initializing Spring embedded WebApplicationContext
+2023-05-23 10:56:21 [main] INFO  : Root WebApplicationContext: initialization completed in 4266 ms
+2023-05-23 10:56:22 [main] INFO  : HikariPool-1 - Starting...
+2023-05-23 10:56:22 [main] INFO  : HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@4c59e45e
+2023-05-23 10:56:22 [main] INFO  : HikariPool-1 - Start completed.
+2023-05-23 10:56:23 [main] INFO  : Creating SAAJ 1.3 MessageFactory with SOAP 1.1 Protocol
+2023-05-23 10:56:24 [main] INFO  : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@37b52340, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@663bb8ef, org.springframework.security.web.context.SecurityContextHolderFilter@6cd3ad8a, org.springframework.security.web.header.HeaderWriterFilter@445bb139, org.springframework.security.web.authentication.logout.LogoutFilter@46aa712c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2d64160c, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2eeb0f9b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2f4e40d7, org.springframework.security.web.access.ExceptionTranslationFilter@1afd72ef, org.springframework.security.web.access.intercept.AuthorizationFilter@298f0a0b]
+2023-05-23 10:56:27 [main] INFO  : Starting ProtocolHandler ["http-nio-8080"]
+2023-05-23 10:56:27 [main] INFO  : Tomcat started on port(s): 8080 (http) with context path ''
+2023-05-23 10:56:27 [main] INFO  : Started MobileAppIntegratorQuicktellerApplication in 11.882 seconds (process running for 15.439)
+2023-05-23 10:56:43 [http-nio-8080-exec-1] INFO  : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-05-23 10:56:43 [http-nio-8080-exec-1] INFO  : Initializing Servlet 'dispatcherServlet'
+2023-05-23 10:56:43 [http-nio-8080-exec-1] INFO  : Completed initialization in 1 ms
+2023-05-23 10:56:43 [http-nio-8080-exec-2] INFO  : Account_number of 3000000099 and DeviceUIID of 34a38a3e90fdba6c is trying to register
+2023-05-23 10:56:44 [http-nio-8080-exec-2] INFO  : Account number of 3000000099 successfully registered
+2023-05-23 10:58:17 [http-nio-8080-exec-6] INFO  : Account_number of 3000000099 and DeviceUIID of 34a38a3e90fdba6c is trying to register
+2023-05-23 10:58:17 [http-nio-8080-exec-6] INFO  : Account number of 3000000099 successfully registered
+2023-05-23 10:58:36 [http-nio-8080-exec-7] INFO  : SecurityUser with account_number=3000000099 and device=34a38a3e90fdba6c trying to login to the application
+2023-05-23 10:58:36 [http-nio-8080-exec-7] INFO  : SecurityUser with account_number=3000000099 and device=34a38a3e90fdba6c logged in successfully
+2023-05-23 10:58:37 [http-nio-8080-exec-9] INFO  : Name enquiry for account number of 3000000099
+2023-05-23 10:58:37 [http-nio-8080-exec-2] INFO  : Account history for account number of 3000000099
+2023-05-23 11:06:44 [http-nio-8080-exec-7] INFO  : SecurityUser with account_number=3000000099 and device=34a38a3e90fdba6c trying to login to the application
+2023-05-23 11:06:48 [http-nio-8080-exec-8] INFO  : SecurityUser with account_number=3000000099 and device=34a38a3e90fdba6c trying to login to the application
+2023-05-23 11:06:57 [http-nio-8080-exec-10] INFO  : SecurityUser with account_number=3000000099 and device=34a38a3e90fdba6c trying to login to the application
+2023-05-23 11:07:08 [http-nio-8080-exec-1] INFO  : SecurityUser with account_number=3000000099 and device=34a38a3e90fdba6c trying to login to the application
+2023-05-23 11:07:08 [http-nio-8080-exec-1] INFO  : SecurityUser with account_number=3000000099 and device=34a38a3e90fdba6c logged in successfully
+2023-05-23 11:07:08 [http-nio-8080-exec-9] INFO  : Name enquiry for account number of 3000000099
+2023-05-23 11:07:08 [http-nio-8080-exec-2] INFO  : Account history for account number of 3000000099
+2023-05-23 11:07:57 [http-nio-8080-exec-4] INFO  : SecurityUser with account_number=3000000099 and device=34a38a3e90fdba6c trying to login to the application
+2023-05-23 11:07:57 [http-nio-8080-exec-4] INFO  : SecurityUser with account_number=3000000099 and device=34a38a3e90fdba6c logged in successfully
+2023-05-23 11:07:57 [http-nio-8080-exec-6] INFO  : Name enquiry for account number of 3000000099
+2023-05-23 11:07:57 [http-nio-8080-exec-5] INFO  : Account history for account number of 3000000099

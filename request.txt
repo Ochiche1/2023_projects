@@ -1,0 +1,153 @@
+
+Process Debit (Deposit to GL)
+Request parameters: 
+
+String acctNo;
+String contraAcctNo;
+BigDecimal amount;
+BigDecimal transactionAmount;
+Long channelId;
+String txnReference;
+Long transmissionTime;
+
+Response:
+String serviceId;
+Date effectiveDt;
+String terminalId;
+String aTMSwitchID;
+String origReferenceNo;
+String referenceNo;
+Long transmissionTime;;
+String reversal;
+String cardNo;
+String processingCode;
+String isoCurrency;
+String fromAccount;
+String toAccount;
+BigDecimal tranAmount1;
+BigDecimal tranAmount2;
+String locationDescription;
+String tranDescription;
+String responseCode;
+
+Process Credit (GL to Deposit)
+Request parameters: 
+
+String acctNo;
+String contraAcctNo;
+BigDecimal amount;
+BigDecimal transactionAmount;
+String txnReference;
+Long transmissionTime;
+
+Response:
+String serviceId;
+Date effectiveDt;
+String terminalId;
+String aTMSwitchID;
+String origReferenceNo;
+String referenceNo;
+Long transmissionTime;;
+String reversal;
+String cardNo;
+String processingCode;
+String isoCurrency;
+String fromAccount;
+String toAccount;
+BigDecimal tranAmount1;
+BigDecimal tranAmount2;
+String locationDescription;
+String tranDescription;
+String responseCode;
+
+Customer Transfer (customer to customer)
+   Request parameters:
+   String fromAccountNumber;
+   String toAccountNumber;
+   BigDecimal amount;
+   BigDecimal transactionAmount;
+   String txnReference;
+   Long transmissionTime;
+   Long channelId;
+
+Response:
+String serviceId;
+Date effectiveDt;
+String terminalId;
+String aTMSwitchID;
+String origReferenceNo;
+String referenceNo;
+Long transmissionTime;;
+String reversal;
+String cardNo;
+String processingCode;
+String isoCurrency;
+String fromAccount;
+String toAccount;
+BigDecimal tranAmount1;
+BigDecimal tranAmount2;
+String locationDescription;
+String tranDescription;
+String responseCode;
+
+
+Admin Services (GL TO GL)  
+    String fromGLAccountNumber;
+    String toGLAccountNumber;
+    BigDecimal amount;
+    BigDecimal transactionAmount;
+    String txnReference;
+    
+Response:
+String serviceId;
+Date effectiveDt;
+String terminalId;
+String aTMSwitchID;
+String origReferenceNo;
+String referenceNo;
+Long transmissionTime;;
+String reversal;
+String cardNo;
+String processingCode;
+String isoCurrency;
+String fromAccount;
+String toAccount;
+BigDecimal tranAmount1;
+BigDecimal tranAmount2;
+String locationDescription;
+String tranDescription;
+String responseCode;
+
+
+
+AtmReversal 
+Request
+
+String accountNo
+String contraAcctNo
+String systemReference
+BigDecimal txnAmount
+String txnCurrencyCode
+String txnDate
+Long txnJournalId
+String txnReference
+
+Response:
+String serviceId;
+Date effectiveDt;
+String terminalId;
+String aTMSwitchID;
+String origReferenceNo;
+String referenceNo;
+Long transmissionTime;;
+String reversal;
+String cardNo;
+String processingCode;
+String isoCurrency;
+String fromAccount;
+String toAccount;
+BigDecimal tranAmount1;
+BigDecimal tranAmount2;
+String locationDescription;
+String tranDescription;
+String responseCode;

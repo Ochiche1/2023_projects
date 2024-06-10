@@ -1,0 +1,57 @@
+2023-05-05 12:11:55 [restartedMain] INFO  : Starting MswitchApplication using Java 17.0.7 on WINDOWS-K9J3AKV with PID 14960 (C:\Users\saliu\Documents\2023 work\new mswitch\mswitch\target\classes started by SOFTWAREDEVELOPER1 in C:\Users\saliu\Documents\2023 work\new mswitch)
+2023-05-05 12:11:55 [restartedMain] INFO  : The following 1 profile is active: "dev"
+2023-05-05 12:11:55 [restartedMain] INFO  : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2023-05-05 12:11:55 [restartedMain] INFO  : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2023-05-05 12:11:57 [restartedMain] WARN  : Unable to start LiveReload server
+2023-05-05 12:11:57 [restartedMain] INFO  : Netty started on port 8080
+2023-05-05 12:11:57 [restartedMain] INFO  : Started MswitchApplication in 3.458 seconds (JVM running for 4.766)
+2023-05-05 12:11:57 [restartedMain] INFO  : Waiting to read data from socket stream
+2023-05-05 12:11:57 [restartedMain] INFO  : After first read from input stream 60
+2023-05-05 12:11:57 [restartedMain] INFO  : Before byte 2
+2023-05-05 12:11:57 [restartedMain] INFO  : After second read from input stream 63
+2023-05-05 12:11:57 [restartedMain] INFO  : Data Length: 15423
+2023-05-05 12:11:57 [restartedMain] INFO  : MessageID ===> xml 
+2023-05-05 12:11:57 [restartedMain] INFO  : Input BitMaps as strings of 1s and 0s 0111011001100101
+0111001001110011
+0110100101101111
+0110111000111101
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+
+2023-05-05 12:11:57 [restartedMain] INFO  : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2023-05-05 12:11:57 [restartedMain] ERROR : Application run failed
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:774) ~[spring-boot-2.7.5.jar:2.7.5]
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:755) ~[spring-boot-2.7.5.jar:2.7.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315) ~[spring-boot-2.7.5.jar:2.7.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306) ~[spring-boot-2.7.5.jar:2.7.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295) ~[spring-boot-2.7.5.jar:2.7.5]
+	at com.neptunesoftware.mswitch.MswitchApplication.main(MswitchApplication.java:25) ~[classes/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.5.jar:2.7.5]
+Caused by: java.lang.NumberFormatException: For input string: ""1"
+	at java.lang.NumberFormatException.forInputString(NumberFormatException.java:67) ~[?:?]
+	at java.lang.Integer.parseInt(Integer.java:654) ~[?:?]
+	at java.lang.Integer.parseInt(Integer.java:786) ~[?:?]
+	at com.neptunesoftware.mswitch.translate.impl.postbridge.CreateValueFromStream.processPanNumber(CreateValueFromStream.java:602) ~[classes/:?]
+	at com.neptunesoftware.mswitch.translate.impl.postbridge.CreateValueFromStream.setDataElement(CreateValueFromStream.java:110) ~[classes/:?]
+	at com.neptunesoftware.mswitch.translate.impl.postbridge.CreateValueFromStream.retrieveDataElements(CreateValueFromStream.java:102) ~[classes/:?]
+	at com.neptunesoftware.mswitch.translate.impl.postbridge.CreateValueFromStream.createValueFromStream(CreateValueFromStream.java:52) ~[classes/:?]
+	at com.neptunesoftware.mswitch.translate.impl.postbridge.CreateValueFromStream.process(CreateValueFromStream.java:26) ~[classes/:?]
+	at com.neptunesoftware.mswitch.translate.impl.postbridge.CreateValueFromStream.process(CreateValueFromStream.java:15) ~[classes/:?]
+	at com.neptunesoftware.mswitch.pipeline_design.Pipeline.lambda$addHandler$0(Pipeline.java:12) ~[classes/:?]
+	at com.neptunesoftware.mswitch.pipeline_design.Pipeline.lambda$addHandler$0(Pipeline.java:12) ~[classes/:?]
+	at com.neptunesoftware.mswitch.pipeline_design.Pipeline.lambda$addHandler$0(Pipeline.java:12) ~[classes/:?]
+	at com.neptunesoftware.mswitch.pipeline_design.Pipeline.lambda$addHandler$0(Pipeline.java:12) ~[classes/:?]
+	at com.neptunesoftware.mswitch.pipeline_design.Pipeline.execute(Pipeline.java:16) ~[classes/:?]
+	at com.neptunesoftware.mswitch.pipeline_design.PostBridgeExecutionPipeline.execute(PostBridgeExecutionPipeline.java:41) ~[classes/:?]
+	at com.neptunesoftware.mswitch.MswitchApplication.run(MswitchApplication.java:36) ~[classes/:?]
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:771) ~[spring-boot-2.7.5.jar:2.7.5]
+	... 10 more

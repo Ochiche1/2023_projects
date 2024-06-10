@@ -1,0 +1,9 @@
+ String firstName;
+ String lastName;
+ String middleName;
+ String gender;
+
+ String homeAddress;
+ String phone;
+ String email;
+ String bvn;

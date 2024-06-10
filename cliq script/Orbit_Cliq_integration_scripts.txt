@@ -1,0 +1,1323 @@
+if exists (select * from sysobjects where name = 'orbit_cliq_inward_trans')
+    drop  table orbit_cliq_inward_trans    
+go
+
+create table orbit_cliq_inward_trans 
+(
+	seq_no			numeric(18,0)	identity,
+  	accountnumber		varchar(60) 	not null,
+  	isOcode			varchar(10)	not null, 
+  	accountstatus		varchar(10)	null,
+  	acctname		varchar(40)	null,
+  	drcr			varchar(3)	not null,
+  	acctype			varchar(10)	not null,
+  	transactionreference	varchar(40)	null,
+  	amount			decimal(21,6)	not null,
+  	dailylimit		decimal(21,6)	null,
+  	currentbalance		decimal(21,6)	null,
+  	trandate		datetime	not null,
+  	narration		varchar(80)	null, 
+  	channelId		integer		null,
+  	error_code		integer		null,
+  	error_message 		varchar(250)	null
+)
+go
+
+CREATE UNIQUE CLUSTERED INDEX pk_orbit_cliq_inward_trans
+    ON orbit_cliq_inward_trans(seq_no)
+go
+
+
+if exists (select * from sysobjects where name = 'orbit_cliq_outward_trans')
+    drop  table orbit_cliq_outward_trans    
+go
+
+create table orbit_cliq_outward_trans 
+(
+	tran_id			numeric(12,0)	not null,
+	history_ptid		numeric(12,0)	not null,
+  	accountnumber		varchar(60) 	not null,
+  	isOcode			varchar(10)	not null, 
+  	accountstatus		varchar(10)	null,
+  	acctname		varchar(40)	null,
+  	drcr			varchar(3)	not null,
+  	acctype			varchar(10)	not null,
+  	transactionreference	varchar(40)	null,
+  	amount			decimal(21,6)	not null,
+  	dailylimit		decimal(21,6)	null,
+  	currentbalance		decimal(21,6)	null,
+  	trandate		datetime	not null,
+  	narration		varchar(80)	null, 
+  	channelId		integer		null,
+	effective_dt		smalldatetime	not null,
+	process_status		varchar(20)	not null,
+  	error_code		integer		null,
+  	error_message 		varchar(250)	null
+)
+go
+
+CREATE UNIQUE CLUSTERED INDEX pk_orbit_cliq_outward_trans
+    ON orbit_cliq_outward_trans(tran_id)
+go
+
+
+if exists (select * from ad_gb_channel where channel_id = 98) 
+	print 'channel id 98 already exists'
+else	
+	insert into ad_gb_channel ( channel_id, description, empl_id, effective_dt, status, create_dt, row_version, status_sort, ptid, memo_type ) 
+		 values ( 98, 'CliqBanking(Cliq) Integration - Neptune MFB', 0, '01/01/1990 12:00:00.000 AM', 'Active', getdate(), 1, 10, 98, ' ' ) 
+go
+
+delete pc_services where services_id in (98)
+go
+
+insert into pc_services 
+	(
+	services_id,		effective_dt,				status,				status_sort,
+	create_dt,		visible,				valid_dp,			valid_ln,
+	valid_rm,		description,				option_1_label,			option_2_label,
+	option_3_label,		option_4_label,				option_5_label,			parm_1_label,
+	parm_2_label,		parm_3_label,				parm_4_label,			amt_1_label,
+	amt_2_label,		amt_3_label,				amt_4_label,			cnt_1_label,
+	cnt_2_label,		cnt_3_label,				cnt_4_label,			dt_1_label,
+	dt_2_label,		dt_3_label,				dt_4_label,			verify_pin,
+	pin_on_acct,		capture,				debug,				history_rows,
+	origin_id,		avail_bal_cd,				avail_bal_ck,			avail_bal_ln,
+	avail_bal_sv,		fuzzy_reversal,				memo_float_rate,		memo_float_limit,
+	balance_odlimit,	balance_loc,				avail_bal_inq_cd,		avail_bal_inq_ck,
+	avail_bal_inq_ln,	avail_bal_inq_sv,			balance_inq_odlimit,		balance_inq_loc,
+	origin_type,		row_version,				memo_type,			ptid,
+	empl_id,		gl_acct_proprietary,			gl_acct_non_proprietary,	gl_acct_explicit_fees,
+	pin_in_db,		no_days_log,				trusted_services,		valid_effective_dt,
+	show_unverified,	post_today,				buy_exch_index_id,		buy_exch_rate_no,
+	sell_exch_index_id,	sell_exch_rate_no,			allow_multi_crncy,		allow_rate_change,
+	non_cash_pos,		trea_exch_index_id,			trea_exch_rate_no,		hold_days,
+	partial_repost,		Synchronise_dates,			Last_Processing_dt
+	)
+values
+	(
+	98,			'20000101',				'Active',			10,
+	'20000101',		'Y',					'Y',				'Y',
+	'Y',			'CliqBanking(Cliq) Integration - Neptune MFB',		null,		null,
+	null,			null,					null,				null,
+	null,			null,					null,				null,
+	null,			null,					null,				null,
+	null,			null,					null,				null,
+	null,			null,					null,				null,
+	'R',			'Y',					null,				null,
+	12,			8,					8,				8,
+	8,			null,					null,				null,
+	null,			null,					8,				8,
+	8,			8,					null,				null,
+	'NET',			1,					'',				98,
+	0,			'01-001-1073001',			'01-001-1073001',		'01-001-1073001',
+	null,			90,					'Y',				'N',
+	null,			null,					null,				null,
+	null,			null,					null,				null,
+	null,			null,					null,				null,
+	'N',			null, 					null
+	)
+go
+
+
+IF OBJECT_ID('ptg_ov_dp_master_orbit_cliq') IS NOT NULL
+BEGIN
+    DROP TRIGGER ptg_ov_dp_master_orbit_cliq
+    IF OBJECT_ID('ptg_ov_dp_master_orbit_cliq') IS NOT NULL
+        PRINT '<<< FAILED DROPPING TRIGGER ptg_ov_dp_master_orbit_cliq >>>'
+    ELSE
+        PRINT '<<< DROPPED TRIGGER ptg_ov_dp_master_orbit_cliq >>>'
+END
+go
+
+CREATE TRIGGER ptg_ov_dp_master_orbit_cliq
+ON ov_dp_master
+FOR INSERT AS
+declare	@rnSQLError                	int,
+        @nRC                    	int,
+    	@nDPAvailBal               	tinyint,
+        @nDPCollBal                	tinyint,
+        @nDPPostingDef          	tinyint,
+        @nTranId	           	numeric(12,0),
+        @nHistoryPtid           	numeric(12,0),
+        @sAcctNo            		char(12),
+        @sAcctType            		char(3),
+        @dtEfectiveDt            	smalldatetime,
+ 	@sTransRef			varchar(20),
+ 	@sApplType			varchar(3),
+        @sAcctTypeDesc        		varchar(10),
+        @acctname			varchar(40),  
+	@accountstatus			varchar(10),  			
+        @nTranAmt            		decimal(21,6),
+        @nTranCode              	smallint,
+        @sTransDesc            		varchar(80),
+  	@isOcode			varchar(10),
+  	@drcr				varchar(3),
+  	@transactionreference		varchar(40),
+  	@channelId			smallint
+
+if (select count(*) from inserted) = 1
+begin
+    	select	@sAcctNo = a.acct_no,
+        	@sAcctType = a.acct_type,
+		@nTranId = a.tran_id,
+        	@nHistoryPtid = a.history_ptid,
+        	@ChannelId = a.channel_id,
+        	@dtEfectiveDt = a.effective_dt,
+        	@sTransDesc = a.description,
+        	@sTransRef = a.origin_tracer_no,
+        	@nTranAmt = a.amt,
+        	@nTranCode = a.tran_code,
+        	@transactionreference = a.origin_tracer_no,
+        	@acctname = b.title_1,
+		@accountstatus = b.status,
+        	@sApplType = b.appl_type
+    	from 	inserted a, dp_acct b
+    	where	a.acct_no = b.acct_no
+    	and	a.acct_type = b.acct_type
+    	and	b.appl_type in ('CK','SV')
+
+    	if @sApplType in ('CK','SV')
+    	begin
+    		if @sApplType = 'CK'
+    			select @sAcctTypeDesc = 'current'
+    		else
+    			select @sAcctTypeDesc = 'saving'
+
+		if (@nTranCode >= 100 and @nTranCode <= 149) or (@nTranCode >= 200 and @nTranCode <= 249)    /* deposit credits */
+		begin
+			select 	@isOcode = '4501',
+				@drcr = 'cr'
+		end
+		else if (@nTranCode >= 150 and @nTranCode <= 199) or  (@nTranCode >= 250 and @nTranCode <= 299)    /* deposit debits */
+		begin
+			select 	@isOcode = '4502',
+				@drcr = 'dr'
+		end
+		else if @nTranCode >= 600 and @nTranCode <= 899    /* charge codes */
+		begin
+			select @isOcode = '4502',
+				@drcr = 'dr'
+		end
+		else
+			select @drcr = 'ADJ'
+		
+		if @drcr in ('dr','cr')
+		begin
+ 			insert into orbit_cliq_outward_trans
+ 				(
+				tran_id,				history_ptid,  			accountnumber,  			isOcode,
+  				accountstatus,  			acctname,  			drcr,  					acctype,
+  				transactionreference,  			amount,  			dailylimit,  				currentbalance,
+  				trandate,  				narration,  			channelId,				effective_dt,				
+				process_status,  			error_code,  			error_message
+ 				)
+ 			values
+ 				(
+ 	  			@nTranId ,				@nHistoryPtid,			@sAcctNo,				@isOcode,
+ 	  			@accountstatus,				@acctname,			@drcr,					@sAcctTypeDesc,
+ 				@transactionreference,			@nTranAmt,			0,					0,
+ 	      			getdate(),				@sTransDesc,			@channelId,				@dtEfectiveDt,
+ 	      			'Queued',				null,				null
+  	      			)
+		end
+	end
+end
+go
+
+IF OBJECT_ID('csp_orbit_cliq_TranPosting') IS NOT NULL
+BEGIN
+    DROP PROCEDURE csp_orbit_cliq_TranPosting
+    IF OBJECT_ID('csp_orbit_cliq_TranPosting') IS NOT NULL
+        PRINT '<<< FAILED DROPPING PROCEDURE csp_orbit_cliq_TranPosting >>>'
+    ELSE
+        PRINT '<<< DROPPED PROCEDURE csp_orbit_cliq_TranPosting >>>'
+END
+go
+
+create proc csp_orbit_cliq_TranPosting
+	@accountnumber		varchar(60),
+  	@isOcode		varchar(10),
+  	@accountstatus		varchar(10),
+  	@acctname		varchar(40),
+  	@drcr			varchar(3),
+  	@acctype		varchar(10),
+  	@transactionreference	varchar(40),
+  	@amount			decimal(21,6),
+  	@dailylimit		decimal(21,6),
+  	@currentbalance		decimal(21,6),
+  	@trandate		datetime,
+  	@narration		varchar(80),
+  	@channelId		integer,
+  	@error_code		integer        	output,
+  	@error_message 		varchar(250)	output
+  
+As
+
+Declare
+    @rnSQLError            	int,
+    @nRC                	int,
+    @nRowCount            	integer,
+    @nCrncyId            	smallint,
+    @sFromAcctType            	char(3),
+    @psToAccountNumber         	varchar(60),
+    @sToAcctType            	char(3),
+    @dtProcessDt            	smalldatetime,
+    @nRowVersion             	int,
+    @nDPAvailBal            	tinyint,
+    @nDPCollBal            	tinyint,
+    @nDPPostingDef            	tinyint,
+    @nHistoryPtid            	numeric(12,0),
+    @nTfrHistoryPtid        	numeric(12,0),
+    @nChargeCode            	smallint,
+    @nBranchNo            	smallint,
+    @sGLPostingPrefix           varchar(60),
+    @nTranCode                  smallint,
+    @nOffsetTranCode            smallint,
+    @nGLTranCode                smallint,
+    @sFromSms         		Char(1), ---- Mike - 15/07/2021 for sms alert
+    @nFromSmsChargeCode        	smallint, ---- Mike - 15/07/2021 for sms alert
+    @sOrigBranch     		varchar(50),    ---- Mike - 15/07/2021 for sms alert
+    @nSeqNo			numeric(18,0)
+    
+
+--- @channelId = 98 for NIP - CliqBanking(Cliq) Integration - Neptune MFB
+
+--------------------------
+if @drcr = 'CR'
+begin
+	select	@nTranCode = 117,
+          	@nOffsetTranCode = 157,
+            	@nGLTranCode = 551
+end
+else
+begin
+        select	@nTranCode = 157,
+            	@nOffsetTranCode = 117,
+            	@nGLTranCode = 501
+end
+
+select @channelId = 98
+
+select @dtProcessDt = dateadd(day,1,last_to_dt) from ov_control
+
+select @error_code = 0, @error_message = null
+
+select	@nCrncyId = crncy_id
+from    ad_gb_crncy_cntrl
+
+select	@sFromAcctType  = acct_type,
+    	@nBranchNo    = branch_no,
+	@sFromSms = sms,    
+	@nFromSmsChargeCode = sms_cc_code
+from	dp_acct
+where   acct_no = @accountnumber
+	
+select @sToAcctType = 'GL'
+
+select	@psToAccountNumber = gl_acct_proprietary
+from    pc_services
+where   services_id = @channelId
+
+if @psToAccountNumber is null or @psToAccountNumber = null
+begin
+	select @error_code = 99, @error_message = 'Clearing account not setup for CliqBanking Integration'
+
+        return 0
+end
+    	
+select  @sGlPostingPrefix = gl_posting_prefix
+from    ad_gb_branch
+where   branch_no = @nBranchNo
+
+select @psToAccountNumber = stuff( @psToAccountNumber, 1, char_length( @sGlPostingPrefix ), @sGlPostingPrefix )
+
+exec	@nRC = psp_posting_def
+    	'DP',
+    	@nDPAvailBal    	output,
+    	@nDPCollBal    		output,
+    	@nDPPostingDef    	output,
+    	@rnSQLError    		output
+
+select 	@sOrigBranch = name_1
+from 	ad_gb_branch
+where 	branch_no = @nBranchNo
+
+insert into orbit_cliq_inward_trans
+	(
+  	accountnumber,			isOcode,			accountstatus,				acctname,
+  	drcr,				acctype,			transactionreference,			amount,
+  	dailylimit,			currentbalance,			trandate,			  	narration,
+  	channelId,			error_code,			error_message
+	)
+values
+	(
+  	@accountnumber,			@isOcode,			@accountstatus,				@acctname,
+  	@drcr,				@acctype,			@transactionreference,			@amount,
+  	isnull(@dailylimit,0),		isnull(@currentbalance,0),	@trandate,			  	@narration,
+  	@channelId,			@error_code,			@error_message
+       	)
+
+select @nSeqNo = @@identity
+
+begin tran
+
+if @nTranCode = 117
+begin
+    	exec @nRC = psp_tc_dp_cr
+    	    @nTranCode,
+    	    @dtProcessDt,
+    	    @dtProcessDt,
+    	    null,
+    	    null,
+    	    @amount,
+    	    @nCrncyId,
+    	    @channelId,
+    	    null,
+    	    null,
+    	    null,
+    	    0,
+    	    null,
+    	    0,
+    	    null,
+    	    @nBranchNo,
+    	    null,
+    	    0,
+    	    null,
+    	    null,
+    	    @nDPAvailBal,
+    	    null,
+    	    null,
+    	    0,
+    	    @accountnumber,
+    	    @sFromAcctType,
+    	    null,
+    	    null,
+    	    null,
+    	    'N',
+    	    null,
+    	    @transactionreference,
+    	    null,
+    	    'N',
+    	    'N',
+    	    @psToAccountNumber,
+    	    @sToAcctType,
+    	    @narration,
+    	    'N',
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    @nHistoryPtid output,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    @narration
+
+------ Mike - 15/07/2021 - Restructured for sms alert
+    	if @nRC != 0
+	begin
+        	rollback tran
+
+        	select @error_code = @nRC
+
+        	select @error_message = error_text from pc_ov_error where error_id = @nRC
+
+        	begin tran
+	end
+	else	
+    	begin
+		If @sFromSms = 'Y' and @nFromSmsChargeCode is not null
+		begin
+			Exec @nRC = csp_process_alert
+				@dtProcessDt,
+		                @amount,
+		                @accountnumber,
+		                @sFromAcctType,
+		                'Cliq', 
+		                @nTranCode,
+		                @narration,
+		                @nHistoryPtid, 
+		                @nDPAvailBal,
+		                @sOrigBranch,
+		                @dtProcessDt,        
+		                @dtProcessDt,      
+		                @channelId,
+		                @nFromSmsChargeCode,      
+		                @nBranchNo,
+		                @rnSQLError     output
+		end
+
+            	insert into ov_gl_master
+                	(
+                	effective_dt,        		tran_status,        		create_dt,        			acct_type,
+                	tran_code,        		external_id,        		origin_id,         			amt,
+                	origin_tracer_no,    		acct_no,        		reversal,         			description,
+                 	crncy_id,         		branch_no,        		orig_branch_no,        			empl_id,
+                 	tran_analysis_code,     	reference,        		endpoint
+                	)
+            	values
+                	(
+                	@dtProcessDt,         		10,           	 		@dtProcessDt,         			'GL',
+                 	@nGLTranCode,        		0,             			0,             				@amount,
+                 	@transactionreference,		@psToAccountNumber,    		0,             				@narration,
+                 	@nCrncyId,         		@nBranchNo,        		@nBranchNo,        			0,
+                 	null,            		@transactionreference,		null
+                	)
+	
+            	select @nRowCount = @@rowcount, @rnSQLError = @@error, @nTfrHistoryPtid = @@identity
+            	if @nRowcount != 1
+            	begin
+            		rollback tran
+	
+            	    	select @error_code = -5964
+
+	                select @error_message    = error_text from pc_ov_error where error_id = @error_code
+
+                	begin tran
+            	end
+        end
+end
+
+if @nTranCode = 157
+begin
+	select	@nChargeCode = charge_code
+	from 	ad_gb_tc
+	where	tran_code = @nTranCode
+
+    	exec @nRC = psp_tc_dp_dr
+        	@nTranCode,
+        	@dtProcessDt,
+        	@dtProcessDt,
+        	null,
+        	null,
+        	@amount,
+            	@nCrncyId,
+           	@channelId,
+            	@nChargeCode, ----@nChargeCode,
+        	null, --- @pnChargeAmount,
+        	null,
+        	@nDPCollBal,
+            	@nCrncyId,
+            	0,
+        	null,
+        	null,
+            	null,
+            	@nBranchNo,
+            	null,
+        	0,
+        	null,
+        	null,
+        	@nDPAvailBal,
+            	null,
+            	null,
+            	0,
+        	null,
+        	@accountnumber,
+        	@sFromAcctType,
+        	@transactionreference,
+           	null,
+            	null,
+            	'N',
+        	null,
+        	@transactionreference,
+        	null,
+        	'N',
+            	'N',
+            	@psToAccountNumber,
+        	@sToAcctType,
+        	@narration,
+            	'N',
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	@nHistoryPtid    output,
+        	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+        	@narration
+
+	------ Mike - 15/07/2021 - Restructured for sms alert
+    	if @nRC != 0
+	begin
+        	rollback tran
+
+        	select @error_code = @nRC
+
+        	select @error_message    = error_text from pc_ov_error where error_id = @nRC
+
+        	begin tran
+	end
+	else
+    	begin
+		If @sFromSms = 'Y' and @nFromSmsChargeCode is not null
+		begin
+			Exec @nRC = csp_process_alert
+				@dtProcessDt,
+	                	@amount,
+	                	@accountnumber,
+	                	@sFromAcctType,
+	                	'Cliq', 
+	                	@nTranCode,
+	                	@narration,
+	                	@nHistoryPtid, 
+	                	@nDPAvailBal,
+	                	@sOrigBranch,
+	                	@dtProcessDt,        
+	                	@dtProcessDt,      
+	                	@channelId,
+	                	@nFromSmsChargeCode,      
+	                	@nBranchNo,
+	                	@rnSQLError     output
+		end
+
+            	insert into ov_gl_master
+                	(
+                	effective_dt,        			tran_status,        		create_dt,        		acct_type,
+                	tran_code,        			external_id,        		origin_id,         		amt,
+                 	origin_tracer_no,    			acct_no,        		reversal,         		description,
+                 	crncy_id,         			branch_no,        		orig_branch_no,        		empl_id,
+                 	tran_analysis_code,     		reference,        		endpoint
+                	)
+            	values
+                	(
+                	@dtProcessDt,         			10,            			@dtProcessDt,         		'GL',
+                 	@nGLTranCode,         			0,             			0,             			@amount,
+                 	@transactionreference,			@psToAccountNumber,    		0,             			@narration,
+                 	@nCrncyId,         			@nBranchNo,         		@nBranchNo,        		0,
+                 	null,            			@transactionreference,		null
+                	)
+	
+            	select @nRowCount = @@rowcount, @rnSQLError = @@error, @nTfrHistoryPtid = @@identity
+            	if @nRowcount != 1
+            	begin
+                	rollback tran
+	
+                	select @error_code = -5964
+	
+                	select @error_message    = error_text from pc_ov_error where error_id = @error_code
+	
+                	begin tran
+            	end
+        end
+end
+update 	orbit_cliq_inward_trans
+set 	error_code = @error_code,
+	error_message = @error_message
+where 	seq_no = @nSeqNo
+
+commit tran
+go
+
+
+GRANT EXECUTE ON csp_orbit_cliq_TranPosting TO grp_private
+go
+
+if exists (select * from sysobjects where name = 'orbit_cliq_inward_trans')
+    drop  table orbit_cliq_inward_trans    
+go
+
+create table orbit_cliq_inward_trans 
+(
+	seq_no			numeric(18,0)	identity,
+  	accountnumber		varchar(60) 	not null,
+  	isOcode			varchar(10)	not null, 
+  	accountstatus		varchar(10)	null,
+  	acctname		varchar(40)	null,
+  	drcr			varchar(3)	not null,
+  	acctype			varchar(10)	not null,
+  	transactionreference	varchar(40)	null,
+  	amount			decimal(21,6)	not null,
+  	dailylimit		decimal(21,6)	null,
+  	currentbalance		decimal(21,6)	null,
+  	trandate		datetime	not null,
+  	narration		varchar(80)	null, 
+  	channelId		integer		null,
+	history_ptid 		numeric(12,0)	null,  	
+  	error_code		integer		null,
+  	error_message 		varchar(250)	null
+)
+go
+
+CREATE UNIQUE CLUSTERED INDEX pk_orbit_cliq_inward_trans
+    ON orbit_cliq_inward_trans(seq_no)
+go
+
+
+IF OBJECT_ID('csp_orbit_cliq_TranPosting') IS NOT NULL
+BEGIN
+    DROP PROCEDURE csp_orbit_cliq_TranPosting
+    IF OBJECT_ID('csp_orbit_cliq_TranPosting') IS NOT NULL
+        PRINT '<<< FAILED DROPPING PROCEDURE csp_orbit_cliq_TranPosting >>>'
+    ELSE
+        PRINT '<<< DROPPED PROCEDURE csp_orbit_cliq_TranPosting >>>'
+END
+go
+
+create proc csp_orbit_cliq_TranPosting
+	@accountnumber		varchar(60),
+  	@isOcode		varchar(10),
+  	@accountstatus		varchar(10),
+  	@acctname		varchar(40),
+  	@drcr			varchar(3),
+  	@acctype		varchar(10),
+  	@transactionreference	varchar(40),
+  	@amount			decimal(21,6),
+  	@dailylimit		decimal(21,6),
+  	@currentbalance		decimal(21,6),
+  	@trandate		datetime,
+  	@narration		varchar(80),
+  	@channelId		integer,
+  	@error_code		integer        	output,
+  	@error_message 		varchar(250)	output
+  
+As
+
+Declare
+    @rnSQLError            	int,
+    @nRC                	int,
+    @nRowCount            	integer,
+    @nCrncyId            	smallint,
+    @sFromAcctType            	char(3),
+    @psToAccountNumber         	varchar(60),
+    @sToAcctType            	char(3),
+    @dtProcessDt            	smalldatetime,
+    @nRowVersion             	int,
+    @nDPAvailBal            	tinyint,
+    @nDPCollBal            	tinyint,
+    @nDPPostingDef            	tinyint,
+    @nHistoryPtid            	numeric(12,0),
+    @nTfrHistoryPtid        	numeric(12,0),
+    @nChargeCode            	smallint,
+    @nBranchNo            	smallint,
+    @sGLPostingPrefix           varchar(60),
+    @nTranCode                  smallint,
+    @nOffsetTranCode            smallint,
+    @nGLTranCode                smallint,
+    @sFromSms         		Char(1), ---- Mike - 15/07/2021 for sms alert
+    @nFromSmsChargeCode        	smallint, ---- Mike - 15/07/2021 for sms alert
+    @sOrigBranch     		varchar(50),    ---- Mike - 15/07/2021 for sms alert
+    @nSeqNo			numeric(18,0)
+    
+
+--- @channelId = 98 for NIP - CliqBanking(Cliq) Integration - Neptune MFB
+
+--------------------------
+if @drcr = 'CR'
+begin
+	select	@nTranCode = 117,
+          	@nOffsetTranCode = 157,
+            	@nGLTranCode = 551
+end
+else
+begin
+        select	@nTranCode = 157,
+            	@nOffsetTranCode = 117,
+            	@nGLTranCode = 501
+end
+
+select @channelId = 98
+
+select @dtProcessDt = dateadd(day,1,last_to_dt) from ov_control
+
+select @error_code = 0, @error_message = null
+
+select	@nCrncyId = crncy_id
+from    ad_gb_crncy_cntrl
+
+select	@sFromAcctType  = acct_type,
+    	@nBranchNo    = branch_no,
+	@sFromSms = sms,    
+	@nFromSmsChargeCode = sms_cc_code
+from	dp_acct
+where   acct_no = @accountnumber
+	
+select @sToAcctType = 'GL'
+
+select	@psToAccountNumber = gl_acct_proprietary
+from    pc_services
+where   services_id = @channelId
+
+if @psToAccountNumber is null or @psToAccountNumber = null
+begin
+	select @error_code = 99, @error_message = 'Clearing account not setup for CliqBanking Integration'
+
+        return 0
+end
+    	
+select  @sGlPostingPrefix = gl_posting_prefix
+from    ad_gb_branch
+where   branch_no = @nBranchNo
+
+select @psToAccountNumber = stuff( @psToAccountNumber, 1, char_length( @sGlPostingPrefix ), @sGlPostingPrefix )
+
+exec	@nRC = psp_posting_def
+    	'DP',
+    	@nDPAvailBal    	output,
+    	@nDPCollBal    		output,
+    	@nDPPostingDef    	output,
+    	@rnSQLError    		output
+
+select 	@sOrigBranch = name_1
+from 	ad_gb_branch
+where 	branch_no = @nBranchNo
+
+insert into orbit_cliq_inward_trans
+	(
+  	accountnumber,			isOcode,			accountstatus,				acctname,
+  	drcr,				acctype,			transactionreference,			amount,
+  	dailylimit,			currentbalance,			trandate,			  	narration,
+  	channelId,			error_code,			error_message
+	)
+values
+	(
+  	@accountnumber,			@isOcode,			@accountstatus,				@acctname,
+  	@drcr,				@acctype,			@transactionreference,			@amount,
+  	isnull(@dailylimit,0),		isnull(@currentbalance,0),	@trandate,			  	@narration,
+  	@channelId,			@error_code,			@error_message
+       	)
+
+select @nSeqNo = @@identity
+
+begin tran
+
+if @nTranCode = 117
+begin
+    	exec @nRC = psp_tc_dp_cr
+    	    @nTranCode,
+    	    @dtProcessDt,
+    	    @dtProcessDt,
+    	    null,
+    	    null,
+    	    @amount,
+    	    @nCrncyId,
+    	    @channelId,
+    	    null,
+    	    null,
+    	    null,
+    	    0,
+    	    null,
+    	    0,
+    	    null,
+    	    @nBranchNo,
+    	    null,
+    	    0,
+    	    null,
+    	    null,
+    	    @nDPAvailBal,
+    	    null,
+    	    null,
+    	    0,
+    	    @accountnumber,
+    	    @sFromAcctType,
+    	    null,
+    	    null,
+    	    null,
+    	    'N',
+    	    null,
+    	    @transactionreference,
+    	    null,
+    	    'N',
+    	    'N',
+    	    @psToAccountNumber,
+    	    @sToAcctType,
+    	    @narration,
+    	    'N',
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    @nHistoryPtid output,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    null,
+    	    @narration
+
+------ Mike - 15/07/2021 - Restructured for sms alert
+    	if @nRC != 0
+	begin
+        	rollback tran
+
+        	select @error_code = @nRC
+
+        	select @error_message = error_text from pc_ov_error where error_id = @nRC
+
+        	begin tran
+	end
+	else	
+    	begin
+		If @sFromSms = 'Y' and @nFromSmsChargeCode is not null
+		begin
+			Exec @nRC = csp_process_alert
+				@dtProcessDt,
+		                @amount,
+		                @accountnumber,
+		                @sFromAcctType,
+		                'Cliq', 
+		                @nTranCode,
+		                @narration,
+		                @nHistoryPtid, 
+		                @nDPAvailBal,
+		                @sOrigBranch,
+		                @dtProcessDt,        
+		                @dtProcessDt,      
+		                @channelId,
+		                @nFromSmsChargeCode,      
+		                @nBranchNo,
+		                @rnSQLError     output
+		end
+
+            	insert into ov_gl_master
+                	(
+                	effective_dt,        		tran_status,        		create_dt,        			acct_type,
+                	tran_code,        		external_id,        		origin_id,         			amt,
+                	origin_tracer_no,    		acct_no,        		reversal,         			description,
+                 	crncy_id,         		branch_no,        		orig_branch_no,        			empl_id,
+                 	tran_analysis_code,     	reference,        		endpoint
+                	)
+            	values
+                	(
+                	@dtProcessDt,         		10,           	 		@dtProcessDt,         			'GL',
+                 	@nGLTranCode,        		0,             			0,             				@amount,
+                 	@transactionreference,		@psToAccountNumber,    		0,             				@narration,
+                 	@nCrncyId,         		@nBranchNo,        		@nBranchNo,        			0,
+                 	null,            		@transactionreference,		null
+                	)
+	
+            	select @nRowCount = @@rowcount, @rnSQLError = @@error, @nTfrHistoryPtid = @@identity
+            	if @nRowcount != 1
+            	begin
+            		rollback tran
+	
+            	    	select @error_code = -5964
+
+	                select @error_message    = error_text from pc_ov_error where error_id = @error_code
+
+                	begin tran
+            	end
+        end
+end
+
+if @nTranCode = 157
+begin
+	select	@nChargeCode = charge_code
+	from 	ad_gb_tc
+	where	tran_code = @nTranCode
+
+    	exec @nRC = psp_tc_dp_dr
+        	@nTranCode,
+        	@dtProcessDt,
+        	@dtProcessDt,
+        	null,
+        	null,
+        	@amount,
+            	@nCrncyId,
+           	@channelId,
+            	@nChargeCode, ----@nChargeCode,
+        	null, --- @pnChargeAmount,
+        	null,
+        	@nDPCollBal,
+            	@nCrncyId,
+            	0,
+        	null,
+        	null,
+            	null,
+            	@nBranchNo,
+            	null,
+        	0,
+        	null,
+        	null,
+        	@nDPAvailBal,
+            	null,
+            	null,
+            	0,
+        	null,
+        	@accountnumber,
+        	@sFromAcctType,
+        	@transactionreference,
+           	null,
+            	null,
+            	'N',
+        	null,
+        	@transactionreference,
+        	null,
+        	'N',
+            	'N',
+            	@psToAccountNumber,
+        	@sToAcctType,
+        	@narration,
+            	'N',
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	null,
+        	@nHistoryPtid    output,
+        	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+            	null,
+        	@narration
+
+	------ Mike - 15/07/2021 - Restructured for sms alert
+    	if @nRC != 0
+	begin
+        	rollback tran
+
+        	select @error_code = @nRC
+
+        	select @error_message    = error_text from pc_ov_error where error_id = @nRC
+
+        	begin tran
+	end
+	else
+    	begin
+		If @sFromSms = 'Y' and @nFromSmsChargeCode is not null
+		begin
+			Exec @nRC = csp_process_alert
+				@dtProcessDt,
+	                	@amount,
+	                	@accountnumber,
+	                	@sFromAcctType,
+	                	'Cliq', 
+	                	@nTranCode,
+	                	@narration,
+	                	@nHistoryPtid, 
+	                	@nDPAvailBal,
+	                	@sOrigBranch,
+	                	@dtProcessDt,        
+	                	@dtProcessDt,      
+	                	@channelId,
+	                	@nFromSmsChargeCode,      
+	                	@nBranchNo,
+	                	@rnSQLError     output
+		end
+
+            	insert into ov_gl_master
+                	(
+                	effective_dt,        			tran_status,        		create_dt,        		acct_type,
+                	tran_code,        			external_id,        		origin_id,         		amt,
+                 	origin_tracer_no,    			acct_no,        		reversal,         		description,
+                 	crncy_id,         			branch_no,        		orig_branch_no,        		empl_id,
+                 	tran_analysis_code,     		reference,        		endpoint
+                	)
+            	values
+                	(
+                	@dtProcessDt,         			10,            			@dtProcessDt,         		'GL',
+                 	@nGLTranCode,         			0,             			0,             			@amount,
+                 	@transactionreference,			@psToAccountNumber,    		0,             			@narration,
+                 	@nCrncyId,         			@nBranchNo,         		@nBranchNo,        		0,
+                 	null,            			@transactionreference,		null
+                	)
+	
+            	select @nRowCount = @@rowcount, @rnSQLError = @@error, @nTfrHistoryPtid = @@identity
+            	if @nRowcount != 1
+            	begin
+                	rollback tran
+	
+                	select @error_code = -5964
+	
+                	select @error_message    = error_text from pc_ov_error where error_id = @error_code
+	
+                	begin tran
+            	end
+        end
+end
+update 	orbit_cliq_inward_trans
+set 	history_ptid = @nHistoryPtid,
+	error_code = @error_code,
+	error_message = @error_message
+where 	seq_no = @nSeqNo
+
+commit tran
+go
+
+
+GRANT EXECUTE ON csp_orbit_cliq_TranPosting TO grp_private
+go
+
+IF OBJECT_ID('ptg_ov_dp_master_orbit_cliq') IS NOT NULL
+BEGIN
+    DROP TRIGGER ptg_ov_dp_master_orbit_cliq
+    IF OBJECT_ID('ptg_ov_dp_master_orbit_cliq') IS NOT NULL
+        PRINT '<<< FAILED DROPPING TRIGGER ptg_ov_dp_master_orbit_cliq >>>'
+    ELSE
+        PRINT '<<< DROPPED TRIGGER ptg_ov_dp_master_orbit_cliq >>>'
+END
+go
+
+CREATE TRIGGER ptg_ov_dp_master_orbit_cliq
+ON ov_dp_master
+FOR INSERT AS
+declare	@rnSQLError                	int,
+        @nRC                    	int,
+    	@nDPAvailBal               	tinyint,
+        @nDPCollBal                	tinyint,
+        @nDPPostingDef          	tinyint,
+        @nTranId	           	numeric(12,0),
+        @nHistoryPtid           	numeric(12,0),
+        @sAcctNo            		char(12),
+        @sAcctType            		char(3),
+        @dtEfectiveDt            	smalldatetime,
+ 	@sTransRef			varchar(20),
+ 	@sApplType			varchar(3),
+        @sAcctTypeDesc        		varchar(10),
+        @acctname			varchar(40),  
+	@accountstatus			varchar(10),  			
+        @nTranAmt            		decimal(21,6),
+        @nTranCode              	smallint,
+        @sTransDesc            		varchar(80),
+  	@isOcode			varchar(10),
+  	@drcr				varchar(3),
+  	@transactionreference		varchar(40),
+  	@channelId			smallint
+
+if (select count(*) from inserted) = 1
+begin
+    	select	@sAcctNo = a.acct_no,
+        	@sAcctType = a.acct_type,
+		@nTranId = a.tran_id,
+        	@nHistoryPtid = a.history_ptid,
+        	@ChannelId = a.channel_id,
+        	@dtEfectiveDt = a.effective_dt,
+        	@sTransDesc = a.description,
+        	@sTransRef = a.origin_tracer_no,
+        	@nTranAmt = a.amt,
+        	@nTranCode = a.tran_code,
+        	@transactionreference = a.origin_tracer_no,
+        	@acctname = b.title_1,
+		@accountstatus = b.status,
+        	@sApplType = b.appl_type
+    	from 	inserted a, dp_acct b
+    	where	a.acct_no = b.acct_no
+    	and	a.acct_type = b.acct_type
+    	and	b.appl_type in ('CK','SV')
+
+    	if @sApplType in ('CK','SV')
+    	begin
+    		if @sApplType = 'CK'
+    			select @sAcctTypeDesc = 'current'
+    		else
+    			select @sAcctTypeDesc = 'saving'
+
+		if (@nTranCode >= 100 and @nTranCode <= 149) or (@nTranCode >= 200 and @nTranCode <= 249)    /* deposit credits */
+		begin
+			select 	@isOcode = '4501',
+				@drcr = 'cr'
+		end
+		else if (@nTranCode >= 150 and @nTranCode <= 199) or  (@nTranCode >= 250 and @nTranCode <= 299)    /* deposit debits */
+		begin
+			select 	@isOcode = '4502',
+				@drcr = 'dr'
+		end
+		else if @nTranCode >= 600 and @nTranCode <= 899    /* charge codes */
+		begin
+			select @isOcode = '4502',
+				@drcr = 'dr'
+		end
+		else
+			select @drcr = 'ADJ'
+		
+		if @drcr in ('dr','cr') and @ChannelId != 98
+		begin
+ 			insert into orbit_cliq_outward_trans
+ 				(
+				tran_id,				history_ptid,  			accountnumber,  			isOcode,
+  				accountstatus,  			acctname,  			drcr,  					acctype,
+  				transactionreference,  			amount,  			dailylimit,  				currentbalance,
+  				trandate,  				narration,  			channelId,				effective_dt,				
+				process_status,  			error_code,  			error_message
+ 				)
+ 			values
+ 				(
+ 	  			@nTranId ,				@nHistoryPtid,			@sAcctNo,				@isOcode,
+ 	  			@accountstatus,				@acctname,			@drcr,					@sAcctTypeDesc,
+ 				@transactionreference,			@nTranAmt,			0,					0,
+ 	      			getdate(),				@sTransDesc,			@channelId,				@dtEfectiveDt,
+ 	      			'Queued',				null,				null
+  	      			)
+		end
+	end
+end
+go
+
+IF OBJECT_ID('ptg_ov_dp_master_orbit_cliq') IS NOT NULL
+BEGIN
+    DROP TRIGGER ptg_ov_dp_master_orbit_cliq
+    IF OBJECT_ID('ptg_ov_dp_master_orbit_cliq') IS NOT NULL
+        PRINT '<<< FAILED DROPPING TRIGGER ptg_ov_dp_master_orbit_cliq >>>'
+    ELSE
+        PRINT '<<< DROPPED TRIGGER ptg_ov_dp_master_orbit_cliq >>>'
+END
+go
+
+CREATE TRIGGER ptg_ov_dp_master_orbit_cliq
+ON ov_dp_master
+FOR INSERT AS
+declare	@rnSQLError                	int,
+        @nRC                    	int,
+    	@nDPAvailBal               	tinyint,
+        @nDPCollBal                	tinyint,
+        @nDPPostingDef          	tinyint,
+        @nTranId	           	numeric(12,0),
+        @nHistoryPtid           	numeric(12,0),
+        @sAcctNo            		char(12),
+        @sAcctType            		char(3),
+        @dtEfectiveDt            	smalldatetime,
+ 	@sTransRef			varchar(20),
+ 	@sApplType			varchar(3),
+        @sAcctTypeDesc        		varchar(10),
+        @acctname			varchar(40),  
+	@accountstatus			varchar(10),  			
+        @nTranAmt            		decimal(21,6),
+        @nTranCode              	smallint,
+        @sTransDesc            		varchar(80),
+  	@isOcode			varchar(10),
+  	@drcr				varchar(3),
+  	@transactionreference		varchar(40),
+  	@channelId			smallint
+
+if (select count(*) from inserted) = 1
+begin
+    	select	@sAcctNo = a.acct_no,
+        	@sAcctType = a.acct_type,
+		@nTranId = a.tran_id,
+        	@nHistoryPtid = a.history_ptid,
+        	@ChannelId = a.channel_id,
+        	@dtEfectiveDt = a.effective_dt,
+        	@sTransDesc = a.description,
+        	@sTransRef = a.origin_tracer_no,
+        	@nTranAmt = a.amt,
+        	@nTranCode = a.tran_code,
+        	@transactionreference = a.origin_tracer_no,
+        	@acctname = b.title_1,
+		@accountstatus = b.status,
+        	@sApplType = b.appl_type
+    	from 	inserted a, dp_acct b
+    	where	a.acct_no = b.acct_no
+    	and	a.acct_type = b.acct_type
+    	and	b.appl_type in ('CK','SV')
+
+    	if @sApplType in ('CK','SV')
+    	begin
+    		if @sApplType = 'CK'
+    			select @sAcctTypeDesc = 'CA' -----'current'
+    		else
+    			select @sAcctTypeDesc = 'SA' -----'saving'
+
+		if (@nTranCode >= 100 and @nTranCode <= 149) or (@nTranCode >= 200 and @nTranCode <= 249)    /* deposit credits */
+		begin
+			select 	@isOcode = '4501',
+				@drcr = 'cr'
+		end
+		else if (@nTranCode >= 150 and @nTranCode <= 199) or  (@nTranCode >= 250 and @nTranCode <= 299)    /* deposit debits */
+		begin
+			select 	@isOcode = '4502',
+				@drcr = 'dr'
+		end
+		else if @nTranCode >= 600 and @nTranCode <= 899    /* charge codes */
+		begin
+			select @isOcode = '4502',
+				@drcr = 'dr'
+		end
+		else
+			select @drcr = 'ADJ'
+		
+		if @drcr in ('dr','cr') and @ChannelId != 98
+		begin
+ 			insert into orbit_cliq_outward_trans
+ 				(
+				tran_id,				history_ptid,  			accountnumber,  			isOcode,
+  				accountstatus,  			acctname,  			drcr,  					acctype,
+  				transactionreference,  			amount,  			dailylimit,  				currentbalance,
+  				trandate,  				narration,  			channelId,				effective_dt,				
+				process_status,  			error_code,  			error_message
+ 				)
+ 			values
+ 				(
+ 	  			@nTranId ,				@nHistoryPtid,			@sAcctNo,				@isOcode,
+ 	  			@accountstatus,				@acctname,			@drcr,					@sAcctTypeDesc,
+ 				@transactionreference,			@nTranAmt,			0,					0,
+ 	      			getdate(),				@sTransDesc,			@channelId,				@dtEfectiveDt,
+ 	      			'Queued',				null,				null
+  	      			)
+		end
+	end
+end
+go
+

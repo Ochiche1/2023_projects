@@ -1,0 +1,596 @@
+
+CREATE TABLE pc_services_terminal
+(
+    services_id            	int           NOT NULL,
+    terminal_id            	varchar(30)   NOT NULL,
+    terminal_type          	varchar(3)    DEFAULT 'ATM' NOT NULL,
+    terminal_location      	varchar(60)   NOT NULL,
+    branch_no              	smallint      NOT NULL,
+    clearing_acct 		varchar(60)   NOT NULL,
+    receivable_acct 		varchar(60)   NOT NULL,
+    effective_dt           	date	      NOT NULL,
+    status_sort            	tinyint       NOT NULL,
+    status                 	char(8)       NOT NULL,
+    empl_id                	smallint      NOT NULL,
+    create_dt              	date NOT NULL,
+    row_version            	smallint      NOT NULL,
+    ptid                   	int           NOT NULL,
+    memo_type              	char(1)       NOT NULL
+);
+
+
+CREATE TABLE CHANNELMANAGER.PC_SERVICES
+(
+  SERVICES_ID              NUMBER(10)           NOT NULL,
+  EFFECTIVE_DT             TIMESTAMP(6)         NOT NULL,
+  STATUS                   VARCHAR2(12 BYTE)    NOT NULL,
+  STATUS_SORT              NUMBER(3)            NOT NULL,
+  CREATE_DT                TIMESTAMP(6)         NOT NULL,
+  VISIBLE                  CHAR(1 BYTE)         NOT NULL,
+  VALID_DP                 CHAR(1 BYTE)         NOT NULL,
+  VALID_LN                 CHAR(1 BYTE)         NOT NULL,
+  VALID_RM                 CHAR(1 BYTE)         NOT NULL,
+  "description"            VARCHAR2(40 BYTE)    NOT NULL,
+  OPTION_1_LABEL           VARCHAR2(20 BYTE),
+  OPTION_2_LABEL           VARCHAR2(20 BYTE),
+  OPTION_3_LABEL           VARCHAR2(20 BYTE),
+  OPTION_4_LABEL           VARCHAR2(20 BYTE),
+  OPTION_5_LABEL           VARCHAR2(20 BYTE),
+  PARM_1_LABEL             VARCHAR2(20 BYTE),
+  PARM_2_LABEL             VARCHAR2(20 BYTE),
+  PARM_3_LABEL             VARCHAR2(20 BYTE),
+  PARM_4_LABEL             VARCHAR2(20 BYTE),
+  AMT_1_LABEL              VARCHAR2(20 BYTE),
+  AMT_2_LABEL              VARCHAR2(20 BYTE),
+  AMT_3_LABEL              VARCHAR2(20 BYTE),
+  AMT_4_LABEL              VARCHAR2(20 BYTE),
+  CNT_1_LABEL              VARCHAR2(20 BYTE),
+  CNT_2_LABEL              VARCHAR2(20 BYTE),
+  CNT_3_LABEL              VARCHAR2(20 BYTE),
+  CNT_4_LABEL              VARCHAR2(20 BYTE),
+  DT_1_LABEL               VARCHAR2(20 BYTE),
+  DT_2_LABEL               VARCHAR2(20 BYTE),
+  DT_3_LABEL               VARCHAR2(20 BYTE),
+  DT_4_LABEL               VARCHAR2(20 BYTE),
+  VERIFY_PIN               CHAR(1 BYTE),
+  PIN_ON_ACCT              CHAR(1 BYTE),
+  CAPTURE                  CHAR(1 BYTE),
+  "debug"                  NUMBER(5),
+  HISTORY_ROWS             NUMBER(5),
+  ORIGIN_ID                NUMBER(3),
+  AVAIL_BAL_CD             NUMBER(3),
+  AVAIL_BAL_CK             NUMBER(3),
+  AVAIL_BAL_LN             NUMBER(3),
+  AVAIL_BAL_SV             NUMBER(3),
+  FUZZY_REVERSAL           CHAR(1 BYTE),
+  MEMO_FLOAT_RATE          NUMBER(9,4),
+  MEMO_FLOAT_LIMIT         NUMBER(10),
+  BALANCE_ODLIMIT          CHAR(1 BYTE),
+  BALANCE_LOC              CHAR(1 BYTE),
+  AVAIL_BAL_INQ_CD         NUMBER(3),
+  AVAIL_BAL_INQ_CK         NUMBER(3),
+  AVAIL_BAL_INQ_LN         NUMBER(3),
+  AVAIL_BAL_INQ_SV         NUMBER(3),
+  BALANCE_INQ_ODLIMIT      CHAR(1 BYTE),
+  BALANCE_INQ_LOC          CHAR(1 BYTE),
+  ORIGIN_TYPE              VARCHAR2(3 BYTE),
+  ROW_VERSION              NUMBER(10)           NOT NULL,
+  MEMO_TYPE                CHAR(1 BYTE),
+  PTID                     NUMBER(10)           NOT NULL,
+  EMPL_ID                  NUMBER(5)            NOT NULL,
+  GL_ACCT_PROPRIETARY      VARCHAR2(60 BYTE),
+  GL_ACCT_NON_PROPRIETARY  VARCHAR2(60 BYTE),
+  GL_ACCT_EXPLICIT_FEES    VARCHAR2(60 BYTE),
+  PIN_IN_DB                CHAR(1 BYTE),
+  NO_DAYS_LOG              NUMBER(5)            NOT NULL,
+  TRUSTED_SERVICES         CHAR(1 BYTE),
+  VALID_EFFECTIVE_DT       CHAR(1 BYTE)         NOT NULL,
+  SHOW_UNVERIFIED          CHAR(1 BYTE),
+  POST_TODAY               CHAR(1 BYTE),
+  BUY_EXCH_INDEX_ID        NUMBER(10),
+  BUY_EXCH_RATE_NO         NUMBER(10),
+  SELL_EXCH_INDEX_ID       NUMBER(10),
+  SELL_EXCH_RATE_NO        NUMBER(10),
+  ALLOW_MULTI_CRNCY        CHAR(1 BYTE),
+  ALLOW_RATE_CHANGE        CHAR(1 BYTE),
+  NON_CASH_POS             NUMBER(10),
+  TREA_EXCH_INDEX_ID       NUMBER(10),
+  TREA_EXCH_RATE_NO        NUMBER(10),
+  HOLD_DAYS                NUMBER(5),
+  PARTIAL_REPOST           CHAR(1 BYTE)         NOT NULL,
+  SYNCHRONISE_DATES        CHAR(1 BYTE),
+  LAST_PROCESSING_DT       TIMESTAMP(6),
+  MEMO_POST_CHARGES        CHAR(1 BYTE),
+  GL_ACCT_FEES_RECEIVABLE  VARCHAR2(60 BYTE),
+  GL_ACCT_FEES_PAYABLE     VARCHAR2(60 BYTE),
+  EXTERNAL_CODE            NUMBER(10)           DEFAULT 0                     NOT NULL,
+  HOST_PORT                NUMBER(12)           DEFAULT 0                     NOT NULL,
+  SWITCH_NAME              VARCHAR2(200 BYTE)   DEFAULT ' '                   NOT NULL,
+  HOST_ADDR                VARCHAR2(200 BYTE)   DEFAULT ' '                   NOT NULL,
+  INTERBANK_ACCT           VARCHAR2(20 BYTE),
+  GL_POC                   VARCHAR2(60 BYTE)
+)
+TABLESPACE NSNDAT01
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+MONITORING;
+
+
+
+
+CREATE TABLE CHANNELMANAGER.SERVICE_CHANNEL_ACCESS_LOG
+(
+  CREATED_BY                 VARCHAR2(100 BYTE),
+  USER_ID                    VARCHAR2(100 BYTE) NOT NULL,
+  CREATE_DT                  DATE               NOT NULL,
+  REC_ST                     CHAR(1 BYTE)       NOT NULL,
+  SYS_CREATE_TS              DATE,
+  ROW_TS                     DATE,
+  VERSION_NO                 NUMBER(10),
+  ACCT_NO                    VARCHAR2(60 BYTE),
+  ACCT_SHORT_NM              VARCHAR2(100 BYTE),
+  ACTIVITY_AMT               NUMBER(38,20),
+  ACTIVITY_CRNCY_CD          VARCHAR2(10 BYTE),
+  CARD_NO                    VARCHAR2(60 BYTE),
+  CONTRA_ACCT_SHORT_NM       VARCHAR2(60 BYTE),
+  CUST_NO                    VARCHAR2(20 BYTE),
+  EFFECTIVE_DT               DATE,
+  OBJECT_ID                  NUMBER(20),
+  OBJECT_TY                  VARCHAR2(100 BYTE),
+  OPERATION_CD               VARCHAR2(20 BYTE),
+  ORIG_REF_NO                VARCHAR2(60 BYTE),
+  REF_NO                     VARCHAR2(60 BYTE),
+  REQ_REF_NO                 VARCHAR2(58 BYTE),
+  REQUEST_DT                 DATE,
+  REVERSAL_IND               CHAR(1 BYTE),
+  SVCE_PRO_SHORT_NM          VARCHAR2(60 BYTE),
+  SWITCH_ID                  NUMBER,
+  TERMINAL_ID                VARCHAR2(60 BYTE),
+  USER_ACCESS_CD             VARCHAR2(60 BYTE)  NOT NULL,
+  USER_NAME                  VARCHAR2(100 BYTE),
+  WORK_ITEM_ID               NUMBER(19),
+  SERVICE_CHANNEL            VARCHAR2(30 BYTE)  NOT NULL,
+  SERVICE_CD                 VARCHAR2(30 BYTE),
+  SVCE_CHAN_ACCESS_LOG_ID    NUMBER(19),
+  ERROR_CODE                 VARCHAR2(255 BYTE),
+  LOGOUT                     DATE,
+  NO_OF_RETRY                NUMBER(20),
+  ACTIVITY_TY                VARCHAR2(30 BYTE),
+  CUST_CHANNEL_USER_ID       NUMBER,
+  DEBUG_MODE                 VARCHAR2(255 BYTE),
+  LOCAL_EQUIVALENT_TRAN_AMT  NUMBER(38,10),
+  RETURN_CODE                NUMBER,
+  BIC                        VARCHAR2(30 BYTE)
+)
+TABLESPACE NSNDAT01
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+MONITORING;
+
+
+CREATE OR REPLACE TRIGGER CHANNELMANAGER.CUSTOMER_DATA_ITEMTRG 
+   AFTER INSERT
+   ON CHANNELMANAGER.SERVICE_CHANNEL_ACCESS_LOG
+   FOR EACH ROW
+DECLARE
+   v_rowcount                 NUMBER;
+   v_successfullogints        TIMESTAMP;
+   v_logedsuccessfullogints   TIMESTAMP;
+   v_logedrequestdt           DATE;
+   v_totalamt                 NUMBER    := 0;
+   v_logedtotalamt            NUMBER    := 0;
+   v_logedts                  TIMESTAMP;
+   v_rowts                    TIMESTAMP;
+BEGIN
+   IF INSERTING
+   THEN
+      IF :NEW.cust_channel_user_id IS NOT NULL
+      THEN
+/* If successful login set row ts to last_sucessful_login_ts column*/
+         IF :NEW.object_ty = 'CUST_LOGIN' AND :NEW.ERROR_CODE IS NULL
+         THEN
+            v_successfullogints := :NEW.row_ts;
+         END IF;
+
+         SELECT COUNT (*)
+           INTO v_rowcount
+           FROM CUSTOMER_DATA_ITEM
+          WHERE cust_channel_user_id = :NEW.cust_channel_user_id;
+
+         IF v_rowcount = 0
+         THEN
+            INSERT INTO CUSTOMER_DATA_ITEM
+                        (cust_channel_user_id, cust_no,
+                         service_channel, user_access_cd,
+                         object_ty, operation_cd, ERROR_CODE,
+                         activity_ty, no_of_retry, row_ts,
+                         request_dt, total_amt,
+                         local_equivalent_tran_amt, last_successful_login_ts
+                        )
+                 VALUES (:NEW.cust_channel_user_id, :NEW.cust_no,
+                         :NEW.service_channel, :NEW.user_access_cd,
+                         :NEW.object_ty, :NEW.operation_cd, :NEW.ERROR_CODE,
+                         :NEW.activity_ty, :NEW.no_of_retry, :NEW.row_ts,
+                         :NEW.request_dt, v_logedtotalamt,
+                         :NEW.local_equivalent_tran_amt, v_successfullogints
+                        );
+         ELSE
+            /* required Datas */
+            SELECT request_dt, total_amt, row_ts,
+                   last_successful_login_ts
+              INTO v_logedrequestdt, v_logedtotalamt, v_logedts,
+                   v_logedsuccessfullogints
+              FROM CUSTOMER_DATA_ITEM
+             WHERE cust_channel_user_id = :NEW.cust_channel_user_id;
+
+            /* Total Amount Calculation*/
+            IF     :NEW.object_ty = 'CUST_LOGIN'
+               AND :NEW.ERROR_CODE IS NULL
+               AND v_logedrequestdt != :NEW.request_dt
+            THEN
+               v_totalamt := 0;
+            ELSIF        v_logedrequestdt = :NEW.request_dt
+                     AND :NEW.activity_ty = 'END_QUE'
+                  OR     :NEW.activity_ty IS NULL
+                     AND :NEW.ERROR_CODE IS NULL
+                     AND :NEW.operation_cd != 'FETCH'
+                     AND :NEW.local_equivalent_tran_amt IS NOT NULL
+            THEN
+               v_totalamt := v_logedtotalamt + :NEW.local_equivalent_tran_amt;
+            ELSE
+               v_totalamt := v_logedtotalamt;
+            END IF;
+
+            /* Updating row ts based on user locked */
+            IF :NEW.ERROR_CODE = 'CI_SEC_0025'
+            THEN
+               v_rowts := v_logedts;
+            ELSE
+               v_rowts := :NEW.row_ts;
+            END IF;
+
+            /* Update last successful login */
+            IF :NEW.object_ty = 'CUST_LOGIN' AND :NEW.ERROR_CODE IS NULL
+            THEN
+               v_successfullogints := :NEW.row_ts;
+            ELSE
+               v_successfullogints := v_logedsuccessfullogints;
+            END IF;
+
+            UPDATE CUSTOMER_DATA_ITEM
+               SET cust_channel_user_id = :NEW.cust_channel_user_id,
+                   cust_no = :NEW.cust_no,
+                   service_channel = :NEW.service_channel,
+                   user_access_cd = :NEW.user_access_cd,
+                   object_ty = :NEW.object_ty,
+                   operation_cd = :NEW.operation_cd,
+                   ERROR_CODE = :NEW.ERROR_CODE,
+                   activity_ty = :NEW.activity_ty,
+                   no_of_retry = :NEW.no_of_retry,
+                   row_ts = v_rowts,
+                   request_dt = :NEW.request_dt,
+                   total_amt = v_totalamt,
+                   local_equivalent_tran_amt = :NEW.local_equivalent_tran_amt,
+                   last_successful_login_ts = v_successfullogints
+             WHERE CUSTOMER_DATA_ITEM.cust_channel_user_id =
+                                                     :NEW.cust_channel_user_id;
+         END IF;
+      END IF;
+   END IF;
+END;
+/
+
+
+
+
+Request parameters:
+    String serviceId;
+     Date effectiveDt;
+     String terminalId;
+    String aTMSwitchID;
+    String origReferenceNo;
+    String referenceNo;
+    String reversal;
+    String cardNo;
+    String processingCode;
+    String isoCurrency;
+    String fromAccount;
+    String toAccount;
+    BigDecimal tranAmount1;
+    BigDecimal tranAmount2;
+    String locationDescription;
+    String tranDescription;
+    String channelCode;
+    Long transmissionTime;
+    Long channelId;
+    String userAccessCode;
+    String userLoginId;
+    String userPassword;
+    String xapiServiceCode;
+
+Response parameters:
+
+String serviceId;
+Date effectiveDt;
+String terminalId;
+String aTMSwitchID;
+String origReferenceNo;
+String referenceNo;
+Long transmissionTime;;
+String reversal;
+String cardNo;
+String processingCode;
+String isoCurrency;
+String fromAccount;
+String toAccount;
+BigDecimal tranAmount1;
+BigDecimal tranAmount2;
+String locationDescription;
+String tranDescription;
+String responseCode;
+
+Process Debits(PostDepositToGLAccountTransfer) between '00' and '19'
+
+Request parameter
+    String acctNo;
+    String contraAcctNo;
+    String contraGLAccountNumber;
+    Long orgBusinessUnitId;
+    BigDecimal overrideExchangeRateValue;
+    BigDecimal overrideFromExchagneRate;
+    BigDecimal overrideToExchangeRate;
+    String prepaidTxnFg;
+    String product;
+    Long productId;
+    String serviceProviderCd;
+    Long serviceProviderId;
+    boolean skipCrncyConversion;
+    BigDecimal txnAmount;
+    String txnCurrencyCode;
+    String txnDate;
+    String txnDescription;
+    boolean txnGLFlag;
+    String txnReference;
+    boolean txnRevFlag;
+    String valueDate;
+    boolean waiveCharge;
+
+
+Response parameter:
+    String primaryAccountNumber;
+    String responseCode;
+    String retrievalReferenceNumber;
+    String track2Data;
+    BigDecimal transactionAmount;
+    String transactionCurrencyCode;
+    Long transmissionTime;
+    Long txnJournalId;
+    String txnReference;
+    Long voucherRef;
+
+ProcessCredits (PostGLToDepositAccountTransfer) between '20' and '29'
+Request parameter
+    String acctNo;
+    String contraAcctNo;
+    String contraGLAccountNumber;
+    Long orgBusinessUnitId;
+    BigDecimal overrideExchangeRateValue;
+    BigDecimal overrideFromExchagneRate;
+    BigDecimal overrideToExchangeRate;
+    String prepaidTxnFg;
+    String product;
+    Long productId;
+    String serviceProviderCd;
+    Long serviceProviderId;
+    boolean skipCrncyConversion;
+    BigDecimal txnAmount;
+    String txnCurrencyCode;
+    String txnDate;
+    String txnDescription;
+    boolean txnGLFlag;
+    String txnReference;
+    boolean txnRevFlag;
+    String valueDate;
+    boolean waiveCharge;
+
+
+Response parameter:
+    String primaryAccountNumber;
+    String responseCode;
+    String retrievalReferenceNumber;
+    String track2Data;
+    BigDecimal transactionAmount;
+    String transactionCurrencyCode;
+    Long transmissionTime;
+    Long txnJournalId;
+    String txnReference;
+    Long voucherRef;
+
+ProcessInquiryService(Balanceenquiry) between '30' and '39'
+
+Request Parameters:
+String authorizationCode;
+String channelCode;
+String destinationInstitutionCode;
+String sessionId;
+String targetAccountName;
+String targetAccountNumber;
+String targetBankVerificationNumber;
+
+
+Response parameters:
+String authorizationCode;
+BigDecimal availableBalance;
+String channelCode;
+String destinationInstitutionCode;
+String responseCode;
+String sessionId;
+String targetAccountName;
+String targetAccountNumber;
+String targetBankVerificationNumber;
+
+ProcessTransferService (CustomerToCustomerTransfer) between '40' and '49'
+ Request Parameter
+String acquiringInstitutionCode;
+ String additionalText1;
+ String additionalText2;
+ String additionalText3;
+ boolean chargeReversal;
+ String eventCode;
+ Long eventId;
+ String forwardingInstitutionCode;
+ String fromAccountNumber;
+ String fromCurrencyCode;
+ Long fromCurrencyId;
+ String isoCurrencyCode;
+ DateTime localTransactionTime;
+ Long originBusinessunitId;
+ BigDecimal overrideExchangeRateValue;
+ BigDecimal overrideFromExchagneRate;
+ BigDecimal overrideToExchangeRate;
+ String processCode;
+ Long processingCode;
+ String product;
+ Long productId;
+ String retrievalReferenceNumber;
+ boolean reversal;
+ String sessionId;
+ boolean skipCrncyConversion;
+ String toAccountNumber;
+ String toCurrencyCode;
+ Long toCurrencyId;
+ String track2Data;
+ BigDecimal transactionAmount;
+ String txnCurrencyCode;
+ Long txnCurrencyId;
+ String txnDate;
+ String txnDescription;
+ String txnReference;
+ Boolean txnRevFlag;
+ String utilityAccountNo;
+ String valDate;
+
+Response parameter
+
+    Long feeTxnJournalId;
+    String feeTxnReference;
+    String fromAccountNumber;
+    String responseCode;
+    String retrievalReferenceNumber;
+    BigDecimal toAccountBalance;
+    String toAccountNumber;
+    String track2Data;
+    BigDecimal transactionAmount;
+    Long txnJournalId;
+    String txnReference;
+
+ProcessPaymentService(CustomerToCustomerTransfer) between '50' and '59'
+ Request Parameter
+String acquiringInstitutionCode;
+ String additionalText1;
+ String additionalText2;
+ String additionalText3;
+ boolean chargeReversal;
+ String eventCode;
+ Long eventId;
+ String forwardingInstitutionCode;
+ String fromAccountNumber;
+ String fromCurrencyCode;
+ Long fromCurrencyId;
+ String isoCurrencyCode;
+ DateTime localTransactionTime;
+ Long originBusinessunitId;
+ BigDecimal overrideExchangeRateValue;
+ BigDecimal overrideFromExchagneRate;
+ BigDecimal overrideToExchangeRate;
+ String processCode;
+ Long processingCode;
+ String product;
+ Long productId;
+ String retrievalReferenceNumber;
+ boolean reversal;
+ String sessionId;
+ boolean skipCrncyConversion;
+ String toAccountNumber;
+ String toCurrencyCode;
+ Long toCurrencyId;
+ String track2Data;
+ BigDecimal transactionAmount;
+ String txnCurrencyCode;
+ Long txnCurrencyId;
+ String txnDate;
+ String txnDescription;
+ String txnReference;
+ Boolean txnRevFlag;
+ String utilityAccountNo;
+ String valDate;
+
+Response parameter
+
+    Long feeTxnJournalId;
+    String feeTxnReference;
+    String fromAccountNumber;
+    String responseCode;
+    String retrievalReferenceNumber;
+    BigDecimal toAccountBalance;
+    String toAccountNumber;
+    String track2Data;
+    BigDecimal transactionAmount;
+    Long txnJournalId;
+    String txnReference;
+
+ProcessAdminService (PostGLtoGLXfer) between '90' and '99'
+
+Request parameter: 
+
+String fromAcctBusinessunitCode;
+    String fromGLAccountNumber;
+    String originBusinessunitCode;
+    Long originBusinessunitId;
+    String toAcctBusinessunitCode;
+    String toGLAccountNumber;
+    BigDecimal transactionAmount;
+    String transactionCurrencyCode;
+    String txnDate;
+    String txnDescription;
+    String txnReference;
+    Boolean txnRevFlag;
+    String valueDate;
+
+Response parameter:
+String primaryAccountNumber;
+    String responseCode;
+    String retrievalReferenceNumber;
+    String track2Data;
+    BigDecimal transactionAmount;
+    String transactionCurrencyCode;
+    Long transmissionTime;
+    Long txnJournalId;
+    String txnReference;
+    Long voucherRef;

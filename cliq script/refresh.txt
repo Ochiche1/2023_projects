@@ -1,0 +1,6 @@
+CREATE TABLE refresh_token (
+	id numeric(5,0) NULL,
+	user_id numeric(5,0) NULL,
+	token varchar(255) NOT NULL,
+	expiryDate datetime NULL
+);

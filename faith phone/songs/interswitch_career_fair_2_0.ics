@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+CLASS:PUBLIC
+DESCRIPTION:Interswitch Career Fair 2.0\nDate and Time - May 13\, 2023 9:00 AM to 5:00 PM\nVenue - Landmark Centre\, Plot 2 & 3\, Water Corporation Dr\, Victoria Island 106104\, Annex\, Lagos\, Nigeria\nWe can't wait to see you at the Interswitch Career Fair  2.0.\n
+DTSTART:20230513T080000Z
+DTEND:20230513T160000Z
+LOCATION:Landmark Centre, Plot 2 & 3, Water Corporation Dr, Victoria Island 106104, Annex, Lagos, Nigeria
+SUMMARY;LANGUAGE=en-us:Interswitch Career Fair 2.0
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:REMINDER
+TRIGGER:-PT1200M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

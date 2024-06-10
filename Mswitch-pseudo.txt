@@ -1,0 +1,161 @@
+rubikon_orbitr_psp_ex_main2
+	@pnServicesID			int,
+	@pdtEffectiveDt			smalldatetime,
+	@psTerminalID			varchar(10),
+	@psATMSwitchID			varchar(10),
+	@pnReferenceNo			varchar(20),
+	@pnOrigReferenceNo		varchar(20),
+	@psReversal			char(1),
+	@psCardNo			varchar(21),
+	@pnProcessingCode		varchar(6),
+	@psISOCurrency			varchar(3) ,
+	@psFromAccount			varchar(60),
+	@psToAccount			varchar(60),
+	@pnTranAmount1			decimal(21,6),
+	@pnTranAmount2			decimal(21,6),
+	@psLocationDescription		varchar(80),
+	@psTranDescription		varchar(40),
+
+
+-	This is an extract from the psp_ex_main2 call for Orbit-equiweb. 	
+
+-	A section for Rubikon-OrbitR should be added to the mSwitch code with the above parameters.
+
+-	A clause should be introduced such that if it is rubikon-orbitr, it should switch to this section otherwise it will be the current section for Orbit-equiweb.
+
+-	A new code base(webservices) with the above parameters should be built. This new code base will be called by the rubikon-orbitr section.
+
+
+----- body of the new code base -----
+
+if @pnOrigReferenceNo is not null ---- this is a reversal. So set reversal flag
+	select @psReversal = 'Y'
+else
+	select @psReversal = 'N'
+
+
+---- *** get information from pc_services and pc_services_terminal table
+select 	@sPayableGL = gl_acct_non_proprietary 
+from 	pc_services 
+where 	services_id = @pnServicesID
+
+select 	@sBranchNo = branch_no,
+	@sClearingGL = clearing_acct,
+	@sReceivableGL = receivable_acct
+from 	pc_services_terminal
+where 	services_id = @pnServicesID
+and	terminal_id = @psTerminalID
+
+If record_exist ----- i.e this terminal(ATM or POS) is owned by the bank
+	select @sTerminalExist = 'Y'
+else
+	select @sTerminalExist = 'N'
+
+select @sTransactionType = substring(@pnProcessingCode,1,2)
+
+Case
+	@sTransactionType between '00' and '19'
+		do ProcessDebits
+		
+	@sTransactionType between '20' and '29'
+		do ProcessCredits
+		
+	@sTransactionType between '30' and '39'
+		do ProcessInquiryService
+
+	@sTransactionType between '40' and '49'
+		do ProcessTransferService
+
+	@sTransactionType between '50' and '59'
+		do ProcessPaymentService
+
+	@sTransactionType between '90' and '99'
+		do ProcessAdminService
+	
+else
+	return error 'wrong processing code'
+
+
+---- Process Debits section
+:ProcessDebits
+if @sTerminalExist = 'Y'  --- On-Us Debit ATM Transaction
+begin
+	select @psToAccount = @sClearingGL
+	
+	/***the entries here is 
+	Dr	@psFromAccount (Customer account)
+	Cr	@psToAccount  (GL Account)
+	*/
+	Call the appropriate Rubikon Webservice to pass this customer account debit entry
+end
+else ---- Not-On-Us ATM Debit Tranactions
+begin
+	select @psToAccount = @sPayableGL
+	
+	/***the entries here is 
+	Dr	@psFromAccount (Customer account
+	Cr	@psToAccount  (GL Account)
+	*/
+	Call the appropriate Rubikon Webservice to pass this customer account debit entry
+end
+
+
+:ProcessCredits
+if @sTerminalExist = 'Y'  --- On-Us Credit ATM Transaction
+begin
+	select @psToAccount = @sClearingGL
+	
+	/***the entries here is 
+	Dr	@psToAccount  (GL Account)
+	Cr	@psFromAccount (Customer account
+	*/
+	Call the appropriate Rubikon Webservice to pass this customer account credit entry
+end
+else ---- Not-On-Us ATM Credit Tranactions
+begin
+	select @psToAccount = @sPayableGL
+	
+	/***the entries here is 
+	Dr	@psToAccount  (GL Account)
+	Cr	@psFromAccount (Customer account
+	*/
+	Call the appropriate Rubikon Webservice to pass this customer account credit entry
+end
+
+
+:ProcessInquiryService
+Call the appropriate Rubikon Webservice for Balance Inquiry
+
+:ProcessTransferService
+/***the entries here is 
+Dr	@psFromAccount (Customer account
+Cr	@psToAccount  (Csutomer account)
+*/
+Call the appropriate Rubikon Customer-to-customer Transfer Webservice to pass this entry
+
+
+:ProcessPaymentService
+/***the entries here is 
+Dr	@psFromAccount (Customer account
+Cr	@psToAccount  (Csutomer account)
+*/
+Call the appropriate Rubikon Customer-to-customer Transfer Webservice to pass this entry
+
+
+:ProcessAdminService
+if @sTransactionType = '92'
+begin
+	select = @psFromAccount = @sReceivableGL
+	
+	select @psToAccount = @sClearingGL
+	
+	/***the entries here is 
+	Dr	@psToAccount  (GL Account)
+	Cr	@psFromAccount (GL Account)
+	*/
+	Call the appropriate Rubikon GL-to-GL Webservice to pass this entry
+end
+
+
+If @psReversal = 'Y'
+	---- process reversal transaction for all scenarios by calling the appropriate reversal webservcies

@@ -1,0 +1,105 @@
+IF OBJECT_ID('ptg_ov_dp_master_orbit_cliq') IS NOT NULL
+BEGIN
+    DROP TRIGGER ptg_ov_dp_master_orbit_cliq
+    IF OBJECT_ID('ptg_ov_dp_master_orbit_cliq') IS NOT NULL
+        PRINT '<<< FAILED DROPPING TRIGGER ptg_ov_dp_master_orbit_cliq >>>'
+    ELSE
+        PRINT '<<< DROPPED TRIGGER ptg_ov_dp_master_orbit_cliq >>>'
+END
+go
+
+CREATE TRIGGER ptg_ov_dp_master_orbit_cliq
+ON ov_dp_master
+FOR INSERT AS
+declare	@rnSQLError                	int,
+        @nRC                    	int,
+    	@nDPAvailBal               	tinyint,
+        @nDPCollBal                	tinyint,
+        @nDPPostingDef          	tinyint,
+        @nTranId	           	numeric(12,0),
+        @nHistoryPtid           	numeric(12,0),
+        @sAcctNo            		char(12),
+        @sAcctType            		char(3),
+        @dtEfectiveDt            	smalldatetime,
+ 	@sTransRef			varchar(20),
+ 	@sApplType			varchar(3),
+        @sAcctTypeDesc        		varchar(10),
+        @acctname			varchar(40),  
+	@accountstatus			varchar(10),  			
+        @nTranAmt            		decimal(21,6),
+        @nTranCode              	smallint,
+        @sTransDesc            		varchar(80),
+  	@isOcode			varchar(10),
+  	@drcr				varchar(3),
+  	@transactionreference		varchar(40),
+  	@channelId			smallint
+
+if (select count(*) from inserted) = 1
+begin
+    	select	@sAcctNo = a.acct_no,
+        	@sAcctType = a.acct_type,
+		@nTranId = a.tran_id,
+        	@nHistoryPtid = a.history_ptid,
+        	@ChannelId = a.channel_id,
+        	@dtEfectiveDt = a.effective_dt,
+        	@sTransDesc = a.description,
+        	@sTransRef = a.origin_tracer_no,
+        	@nTranAmt = a.amt,
+        	@nTranCode = a.tran_code,
+        	@transactionreference = a.origin_tracer_no,
+        	@acctname = b.title_1,
+		@accountstatus = b.status,
+        	@sApplType = b.appl_type
+    	from 	inserted a, dp_acct b
+    	where	a.acct_no = b.acct_no
+    	and	a.acct_type = b.acct_type
+    	and	b.appl_type in ('CK','SV')
+
+    	if @sApplType in ('CK','SV')
+    	begin
+    		if @sApplType = 'CK'
+    			select @sAcctTypeDesc = 'CA' -----'current'
+    		else
+    			select @sAcctTypeDesc = 'SA' -----'saving'
+
+		if (@nTranCode >= 100 and @nTranCode <= 149) or (@nTranCode >= 200 and @nTranCode <= 249)    /* deposit credits */
+		begin
+			select 	@isOcode = '4501',
+				@drcr = 'cr'
+		end
+		else if (@nTranCode >= 150 and @nTranCode <= 199) or  (@nTranCode >= 250 and @nTranCode <= 299)    /* deposit debits */
+		begin
+			select 	@isOcode = '4502',
+				@drcr = 'dr'
+		end
+		else if @nTranCode >= 600 and @nTranCode <= 899    /* charge codes */
+		begin
+			select @isOcode = '4502',
+				@drcr = 'dr'
+		end
+		else
+			select @drcr = 'ADJ'
+		
+		if @drcr in ('dr','cr') and @ChannelId != 98
+		begin
+ 			insert into orbit_cliq_outward_trans
+ 				(
+				tran_id,				history_ptid,  			accountnumber,  			isOcode,
+  				accountstatus,  			acctname,  			drcr,  					acctype,
+  				transactionreference,  			amount,  			dailylimit,  				currentbalance,
+  				trandate,  				narration,  			channelId,				effective_dt,				
+				process_status,  			error_code,  			error_message
+ 				)
+ 			values
+ 				(
+ 	  			@nTranId ,				@nHistoryPtid,			@sAcctNo,				@isOcode,
+ 	  			@accountstatus,				@acctname,			@drcr,					@sAcctTypeDesc,
+ 				@transactionreference,			@nTranAmt,			0,					0,
+ 	      			getdate(),				@sTransDesc,			@channelId,				@dtEfectiveDt,
+ 	      			'Queued',				null,				null
+  	      			)
+		end
+	end
+end
+go
+

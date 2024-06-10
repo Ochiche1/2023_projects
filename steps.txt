@@ -1,0 +1,5 @@
+1. Using your command line, navigate to drive F:\ 
+2. Change directory to the jar folder using this command cd F:\Orbit\jar
+3. Start the application by typing this command on your commandline, java -jar orbit.transaction-0.0.1.jar
+4. Use this url: http://20.90.104.239:6100/api/v1/authenticate to generate the jwt token
+   and http://20.90.104.239:6100/inwardTransaction for other inward transaction
